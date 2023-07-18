@@ -1,9 +1,9 @@
 pragma circom 2.0.0;
 include "./calculateTotal.circom";
 include "./selector.circom";
-include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/sha256/sha256.circom";
-include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/bitify.circom";
-include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/mux1.circom";
+include "../node_modules/circomlib/circuits/sha256/sha256.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
+include "../node_modules/circomlib/circuits/mux1.circom";
 
 // Given the number of bits of a message to hash, compute the number of padded
 // bits to supply to the Sha256Raw circuit.

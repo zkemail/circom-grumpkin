@@ -1,6 +1,6 @@
 pragma circom 2.0.0;
-include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/comparators.circom";
-include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/bitify.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
 
 /*
  * Given a list of items and an index, output the item at the position denoted
