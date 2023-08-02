@@ -3,22 +3,7 @@
     "version": "0.0.1",
     "description": "circom circuits for the secp256k1_XMD:SHA-256_SSWU_RO_ hash-to-curve algorithm",
     "scripts": {
-        "circom-helper": "circom-helper -c ./circomHelperConfig.json -b ./build/test/ -p 9001 -nc",
-        "test": "jest --runInBand",
-        "test-expandMessageXmd": "jest ExpandMessageXmd.test.ts",
-        "test-expandMessageXmd-debug": "node --inspect-brk ./node_modules/.bin/jest ExpandMessageXmd.test.ts",
-        "test-hashToField": "jest HashToField.test.ts",
-        "test-hashToField-debug": "node --inspect-brk ./node_modules/.bin/jest HashToField.test.ts",
-        "test-mapToCurve": "jest MapToCurve.test.ts",
-        "test-mapToCurve-debug": "node --inspect-brk ./node_modules/.bin/jest MapToCurve.test.ts",
-        "test-isomap": "jest IsoMap.test.ts",
-        "test-isomap-debug": "node --inspect-brk ./node_modules/.bin/jest IsoMap.test.ts",
-        "test-pointAdd": "jest PointAdd.test.ts",
-        "test-pointAdd-debug": "node --inspect-brk ./node_modules/.bin/jest PointAdd.test.ts",
-        "test-hashToCurve": "jest HashToCurve.test.ts",
-        "test-hashToCurve-debug": "node --inspect-brk ./node_modules/.bin/jest HashToCurve.test.ts",
-        "test-sha256": "jest Sha256.test.ts",
-        "test-sha256-debug": "node --inspect-brk ./node_modules/.bin/jest Sha256.test.ts"
+        "test": "jest --runInBand"
     },
     "author": "Koh Wei Jie",
     "license": "MIT",

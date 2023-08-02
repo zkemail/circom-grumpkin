@@ -36,7 +36,7 @@ template BytesToField() {
     signal sum[49];
     sum[0] <== 0;
     for (var i = 0; i < 48; i ++) {
-        sum[i + 1] <== sum[i] + (1<<(8*i))*bytes[47-i];
+        sum[i + 1] <== 256*sum[i] + bytes[i];
     }
     out <== sum[48];
 

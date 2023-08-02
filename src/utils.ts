@@ -6,20 +6,20 @@ const sqrt_mod_p = (n: bigint, p: bigint): bigint => {
 }
 
 // From circom-ecdsa
-function bigint_to_array(n: number, k: number, x: bigint) {
-    let mod: bigint = BigInt(1);
-    for (var idx = 0; idx < n; idx++) {
-        mod = mod * BigInt(2);
-    }
+// function bigint_to_array(n: number, k: number, x: bigint) {
+//     let mod: bigint = BigInt(1);
+//     for (var idx = 0; idx < n; idx++) {
+//         mod = mod * BigInt(2);
+//     }
 
-    let ret: bigint[] = [];
-    var x_temp: bigint = x;
-    for (var idx = 0; idx < k; idx++) {
-        ret.push(x_temp % mod);
-        x_temp = x_temp / mod;
-    }
-    return ret;
-}
+//     let ret: bigint[] = [];
+//     var x_temp: bigint = x;
+//     for (var idx = 0; idx < k; idx++) {
+//         ret.push(x_temp % mod);
+//         x_temp = x_temp / mod;
+//     }
+//     return ret;
+// }
 
 const sgn0 = (input: bigint): bigint => {
     return input % BigInt(2)
@@ -32,8 +32,8 @@ const sgn0 = (input: bigint): bigint => {
  */
 const buffer2bitArray = (b: Buffer): number[] => {
     const res: number[] = []
-    for (let i = 0; i < b.length; i ++) {
-        for (let j = 0; j < 8; j ++) {
+    for (let i = 0; i < b.length; i++) {
+        for (let j = 0; j < 8; j++) {
             res.push((b[i] >> (7 - j) & 1))
         }
     }
@@ -55,21 +55,21 @@ const bufToPaddedBytes = (buf: Buffer): number[] => {
 
     const lenBitArr: number[] = []
     let lengthInBits = BigInt(len).toString(2)
-    for (let i = 0; i < lengthInBits.length; i ++) {
+    for (let i = 0; i < lengthInBits.length; i++) {
         lenBitArr.push(Number(lengthInBits[i]))
     }
 
     while (lenBitArr.length < 64) {
         lenBitArr.unshift(0)
     }
-    
-    for (let i = 0; i < 64; i ++) {
+
+    for (let i = 0; i < 64; i++) {
         result.push(lenBitArr[i])
     }
 
     const p: number[] = []
 
-    for (var i = 0; i < result.length / 8; i ++) {
+    for (var i = 0; i < result.length / 8; i++) {
         const b = Number('0b' + result.slice(i * 8, i * 8 + 8).join(''))
         p.push(b)
     }
@@ -113,7 +113,7 @@ const msgToSha256PaddedBitArr = (msg: string): string => {
 
     const buf = Buffer.alloc(total_length / 8)
     const msg_buf = Buffer.from(msg)
-    for (let i = 0; i < msg_buf.length; i ++) {
+    for (let i = 0; i < msg_buf.length; i++) {
         buf[i] = msg_buf[i]
     }
 
@@ -125,7 +125,7 @@ const bufToSha256PaddedBitArr = (buf: Buffer): string => {
     const bits: number[] = buffer2bitArray(buf)
 
     let result: number[] = []
-    for (let i = 0; i < bits.length; i ++) {
+    for (let i = 0; i < bits.length; i++) {
         result.push(bits[i])
     }
 
@@ -139,16 +139,21 @@ const bufToSha256PaddedBitArr = (buf: Buffer): string => {
 
     let lengthInBits = BigInt(bits.length).toString(2)
     while (lengthInBits.length < 64) {
-        lengthInBits = '0' + lengthInBits 
+        lengthInBits = '0' + lengthInBits
     }
 
     return result.join('') + lengthInBits
 }
 
+const mod = (x: bigint, n: bigint): bigint => {
+    return ((x % n) + n) % n
+}
+
 export {
     sqrt_mod_p,
-    bigint_to_array,
+    // bigint_to_array,
     sgn0,
+    mod,
     buffer2bitArray,
     strToPaddedBytes,
     bufToPaddedBytes,

@@ -112,7 +112,7 @@ template Sgn0() {
     // Ensure that q * 2 + r equals the input
     q * 2 + r === val;
 
-    component num2bits = Num2Bits(64);
+    component num2bits = Num2Bits(254);
     num2bits.in <== in;
     r === num2bits.out[0];
 
@@ -132,7 +132,7 @@ template IsSqrt() {
     squared[0] <== in;
     for(var i=0; i<253; i++) {
         if(power_bits[i]==1) {
-            acc[i+1] <== acc[i] + squared[i];
+            acc[i+1] <== acc[i] * squared[i];
         } else {
             acc[i+1] <== acc[i];
         }
@@ -207,7 +207,7 @@ template IsSqrt() {
 // }
 
 /**
- * Original: https://github.com/abdk-consulting/abdk-libraries-circom/blob/master/base/utils/min.circom
+ * Original: Copyright (c) 2019, ABDK Consulting, https://github.com/abdk-consulting/abdk-libraries-circom/blob/master/base/utils/min.circom
  * Calculate minimum of two signals.
  *
  * @param x first signal
@@ -219,7 +219,7 @@ function min (x, y) {
 }
 
 /**
- * Original: https://github.com/abdk-consulting/abdk-libraries-circom/blob/master/base/field/FieldSqrt.circom
+ * Original: Copyright (c) 2019, ABDK Consulting, https://github.com/abdk-consulting/abdk-libraries-circom/blob/master/base/field/FieldSqrt.circom
  * Calculate square root of given field element.
  *
  * @input x field element to calculate square root of
@@ -296,7 +296,7 @@ template MapToCurve() {
     // 3. tv2 = 1 + tv1;
     signal step3_tv2 <== 1 + step2_tv1;
     // 4. tv1 = 1 - tv1;
-    signal step4_tv1 <== 1 - step3_tv2;
+    signal step4_tv1 <== 1 - step2_tv1;
     // 5. tv3 = tv1 * tv2
     signal step5_tv3 <== step4_tv1 * step3_tv2;
     // 6. tv3 = inv0(tv3)

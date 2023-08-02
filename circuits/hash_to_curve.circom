@@ -1,7 +1,6 @@
 pragma circom 2.0.0;
 include "./hash_to_field.circom";
 include "./map_to_curve.circom";
-include "./iso_map.circom";
 include "./point_add.circom";
 
 template HashToCurve(msg_length) {
@@ -72,4 +71,3 @@ template HashToCurve(msg_length) {
     // }
 }
 
-component main = HashToCurve(64);

@@ -8,13 +8,15 @@ import {
     Z,
     c1,
     c2,
+    c3,
+    c4,
     A,
     B,
 } from './constants'
 const ff = require('ffjavascript')
-import { sgn0, bigint_to_array } from './utils'
-import { iso_map } from './iso_map'
-import { Point } from '@noble/secp256k1';
+import { sgn0, mod } from './utils'
+// import { iso_map } from './iso_map'
+// import { Point } from '@noble/secp256k1';
 
 const str_to_array = (msg: string): number[] => {
     return msg.split('').map((x) => Buffer.from(x)[0])
@@ -22,7 +24,7 @@ const str_to_array = (msg: string): number[] => {
 
 const buf_to_array = (buf: Buffer): number[] => {
     const r: number[] = []
-    for (let i = 0; i < buf.length; i ++) {
+    for (let i = 0; i < buf.length; i++) {
         r.push(Number(buf[i]))
     }
 
@@ -31,7 +33,7 @@ const buf_to_array = (buf: Buffer): number[] => {
 
 const strxor = (a: number[], b: number[]): number[] => {
     const result: number[] = []
-    for (let i = 0; i < a.length; i ++) {
+    for (let i = 0; i < a.length; i++) {
         result.push(a[i] ^ b[i])
     }
     return result
@@ -76,119 +78,151 @@ const expand_msg_xmd = (msg_array: number[]): any => {
 
 const field = new ff.F1Field(p)
 
-const bytes_to_registers = (bytes: number[]) => {
-    const blah = ff.utils.beBuff2int(Buffer.from(bytes)) % p
-    return bigint_to_array(64, 4, blah)
-}
 
-const map_to_curve = (u: bigint) => {
-    // Step 1
-    const step1_tv1 = (Z * (u * u)) % p
-    // Step 2
-    const step2_tv2 = (step1_tv1 * step1_tv1) % p
-    // Step 3
-    const step3_tv1_plus_tv2 = (step1_tv1 + step2_tv2) % p
-    // Step 4
-    const step4_inv0_x1 = field.inv(step3_tv1_plus_tv2)
-    // Step 6
-    const step6_x1_plus_1 = step4_inv0_x1 + BigInt(1)
-    // Step 8 check
-    const step8_x1_mul_c1 = (step6_x1_plus_1 * c1) % p
-    // Step 9
-    const gx1 = (step8_x1_mul_c1 * step8_x1_mul_c1) % p
-    // Step 10
-    const step10_gx1 = (gx1 + A) % p
-    // Step 11
-    const step11_gx1_mul_x1 = (step10_gx1 * step8_x1_mul_c1) % p
-    // Step 12
-    const step12_gx1 = (step11_gx1_mul_x1 + B) % p
-    // Step 13
-    const step13_x2 = (step1_tv1 * step8_x1_mul_c1) % p
-    // Step 14
-    const step14_tv2 = (step1_tv1 * step2_tv2) % p
-    // Step 15
-    const step15_gx2 = (step12_gx1 * step14_tv2) % p
-    // Step 16-18
-    let gx1_sqrt = field.sqrt(step12_gx1)
-    let gx2_sqrt = field.sqrt(step15_gx2)
-    let step16_expected_x
-    let step16_expected_y2
-    if (gx1_sqrt == null) {
-        gx1_sqrt = BigInt(1)
-        step16_expected_x = step13_x2
-        step16_expected_y2 = step15_gx2
-    }
-
-    if (gx2_sqrt == null) {
-        gx2_sqrt = BigInt(1)
-        step16_expected_x = step8_x1_mul_c1
-        step16_expected_y2 = step12_gx1
-    }
-    // Step 19
-    const step19_sqrt_y2 = field.sqrt(step16_expected_y2)
-    const sgn0_u = sgn0(u)
-    const sgn0_y = sgn0(step19_sqrt_y2)
-
-    const step20_e3 = sgn0_u === sgn0_y ? BigInt(1) : BigInt(0)
-    let expected_y
-    if (step20_e3 === BigInt(1)) {
-        expected_y = step19_sqrt_y2
-    } else {
-        expected_y = p - step19_sqrt_y2
-    }
-    const expected_y_array = bigint_to_array(64, 4, expected_y)
- 
-    const x_out = step16_expected_x
-    const y_out = expected_y
-
-    const mapped = iso_map(x_out, y_out, p)
-
-    return {
-        x: mapped.x,
-        y: mapped.y,
-        gx1_sqrt,
-        gx2_sqrt,
-        y_pos: step19_sqrt_y2,
-    }
-}
-
-const generate_inputs = (msg: string): any => {
-    const msg_array = str_to_array(msg)
-    return generate_inputs_from_array(msg_array)
-}
-
-const generate_inputs_from_array = (msg: number[]): any => {
-    const uniform_bytes = expand_msg_xmd(msg)
+const hash_to_field = (msg_array: number[]) => {
+    const uniform_bytes = expand_msg_xmd(msg_array)
 
     const u0_bytes = uniform_bytes.slice(0, 48)
     const u1_bytes = uniform_bytes.slice(48)
 
     const u0 = ff.utils.beBuff2int(Buffer.from(u0_bytes)) % p
     const u1 = ff.utils.beBuff2int(Buffer.from(u1_bytes)) % p
+    return [u0, u1]
 
-    const q0 = map_to_curve(u0)
-    const q1 = map_to_curve(u1)
+}
+
+const map_to_curve = (u: bigint) => {
+    // 1. tv1 = u^2
+    let tv1 = mod((u * u), p);
+    // 2. tv1 = tv1 * c1
+    tv1 = mod((tv1 * c1), p);
+    // 3. tv2 = 1 + tv1
+    let tv2 = mod((tv1 + BigInt(1)), p);
+    // 4. tv1 = 1 - tv1
+    // console.log((BigInt(1) - tv1) % p);
+    tv1 = mod((BigInt(1) - tv1), p);
+    // 5. tv3 = tv1 * tv2
+    let tv3 = mod((tv1 * tv2), p);
+    // 6. tv3 = inv0(tv3)
+    tv3 = field.inv(tv3);
+    // 7. tv4 = u * tv1
+    let tv4 = mod((u * tv1), p);
+    // 8. tv4 = tv4 * tv3
+    tv4 = mod((tv4 * tv3), p);
+    // 9. tv4 = tv4 * c3
+    tv4 = mod((tv4 * c3), p);
+    // 10. x1 = c2 - tv4
+    let x1 = mod((c2 - tv4), p);
+    // 11. gx1 = x1^2
+    let gx1 = mod((x1 * x1), p);
+    // 12. gx1 = gx1 + A
+    gx1 = mod((gx1 + A), p);
+    // 13. gx1 = gx1 * x1
+    gx1 = mod((gx1 * x1), p);
+    // 14. gx1 = gx1 + B
+    gx1 = mod((gx1 + B), p);
+    // 15. e1 = is_square(gx1)
+    let e1 = field.sqrt(gx1) != null;
+    // 16. x2 = c2 + tv4
+    let x2 = mod((c2 + tv4), p);
+    // 17. gx2 = x2^2
+    let gx2 = mod((x2 * x2), p);
+    // 18. gx2 = gx2 + A
+    gx2 = mod((gx2 + A), p);
+    // 19. gx2 = gx2 * x2
+    gx2 = mod((gx2 * x2), p);
+    // 20. gx2 = gx2 + B
+    gx2 = mod((gx2 + B), p);
+    // 21. e2 = is_square(gx2) AND NOT e1    # Avoid short-circuit logic ops
+    let e2 = field.sqrt(gx2) != null && !e1;
+    // 22. x3 = tv2^2
+    let x3 = mod((tv2 * tv2), p);
+    // 23. x3 = x3 * tv3
+    x3 = mod((x3 * tv3), p);
+    // 24. x3 = x3^2
+    x3 = mod((x3 * x3), p);
+    // 25. x3 = x3 * c4
+    x3 = mod((x3 * c4), p);
+    // 26. x3 = x3 + Z
+    x3 = mod((x3 + Z), p);
+    // 27. x = CMOV(x3, x1, e1)    # x = x1 if gx1 is square, else x = x3
+    let x = e1 ? x1 : x3;
+    // 28. x = CMOV(x, x2, e2)    # x = x2 if gx2 is square and gx1 is not
+    x = e2 ? x2 : x;
+    // 29. gx = x^2
+    let gx = mod((x * x), p);
+    // 30. gx = gx + A
+    gx = mod((gx + A), p);
+    // 31. gx = gx * x
+    gx = mod((gx * x), p);
+    // 32. gx = gx + B
+    gx = mod((gx + B), p);
+    // 33. y = sqrt(gx)
+    let y = field.sqrt(gx);
+    // 34. e3 = sgn0(u) == sgn0(y)
+    let e3 = sgn0(u) == sgn0(y);
+    // 35. y = CMOV(-y, y, e3)    # Select correct sign of y
+    y = e3 ? y : mod((p - y), p);
 
     return {
-        msg: msg,
-        q0_gx1_sqrt: bigint_to_array(64, 4, q0.gx1_sqrt),
-        q0_gx2_sqrt: bigint_to_array(64, 4, q0.gx2_sqrt),
-        q0_y_pos: bigint_to_array(64, 4, q0.y_pos),
-        q1_gx1_sqrt: bigint_to_array(64, 4, q1.gx1_sqrt),
-        q1_gx2_sqrt: bigint_to_array(64, 4, q1.gx2_sqrt),
-        q1_y_pos: bigint_to_array(64, 4, q1.y_pos),
-        q0_x_mapped: bigint_to_array(64, 4, q0.x),
-        q0_y_mapped: bigint_to_array(64, 4, q0.y),
-        q1_x_mapped: bigint_to_array(64, 4, q1.x),
-        q1_y_mapped: bigint_to_array(64, 4, q1.y),
+        x: x,
+        y: y
     }
-
-    //const q0_mapped_pt = new Point(q0_mapped.x, q0_mapped.y)
-    //const q1_mapped_pt = new Point(q1_mapped.x, q1_mapped.y)
-
-    //const point = q0_mapped_pt.add(q1_mapped_pt)
-    //return point
 }
+
+const point_add = (x0: bigint, y0: bigint, x1: bigint, y1: bigint) => {
+    const x_sub = mod((x0 - x1), p);
+    const x_sub_inv = field.inv(x_sub);
+    const slope = mod((y0 - y1) * x_sub_inv, p);
+    const x2 = mod((slope * slope - x0 - x1), p);
+    const y2 = mod((y0 + slope * (x2 - x0)), p);
+    return { x: x2, y: y2 }
+}
+
+const hash_to_curve = (msg: number[]) => {
+    const us = hash_to_field(msg);
+    const point0 = map_to_curve(us[0]);
+    const point1 = map_to_curve(us[1]);
+    return point_add(point0.x, point0.y, point1.x, point1.y);
+}
+
+// const generate_inputs = (msg: string): any => {
+//     const msg_array = str_to_array(msg)
+//     return generate_inputs_from_array(msg_array)
+// }
+
+// const generate_inputs_from_array = (msg: number[]): any => {
+//     const uniform_bytes = expand_msg_xmd(msg)
+
+//     const u0_bytes = uniform_bytes.slice(0, 48)
+//     const u1_bytes = uniform_bytes.slice(48)
+
+//     const u0 = ff.utils.beBuff2int(Buffer.from(u0_bytes)) % p
+//     const u1 = ff.utils.beBuff2int(Buffer.from(u1_bytes)) % p
+
+//     const q0 = map_to_curve(u0)
+//     const q1 = map_to_curve(u1)
+
+//     return {
+//         msg: msg,
+//         q0_gx1_sqrt: bigint_to_array(64, 4, q0.gx1_sqrt),
+//         q0_gx2_sqrt: bigint_to_array(64, 4, q0.gx2_sqrt),
+//         q0_y_pos: bigint_to_array(64, 4, q0.y_pos),
+//         q1_gx1_sqrt: bigint_to_array(64, 4, q1.gx1_sqrt),
+//         q1_gx2_sqrt: bigint_to_array(64, 4, q1.gx2_sqrt),
+//         q1_y_pos: bigint_to_array(64, 4, q1.y_pos),
+//         q0_x_mapped: bigint_to_array(64, 4, q0.x),
+//         q0_y_mapped: bigint_to_array(64, 4, q0.y),
+//         q1_x_mapped: bigint_to_array(64, 4, q1.x),
+//         q1_y_mapped: bigint_to_array(64, 4, q1.y),
+//     }
+
+//     //const q0_mapped_pt = new Point(q0_mapped.x, q0_mapped.y)
+//     //const q1_mapped_pt = new Point(q1_mapped.x, q1_mapped.y)
+
+//     //const point = q0_mapped_pt.add(q1_mapped_pt)
+//     //return point
+// }
 
 export {
     gen_msg_prime,
@@ -196,12 +230,15 @@ export {
     gen_b1,
     gen_b2,
     gen_b3,
-    generate_inputs,
-    generate_inputs_from_array,
+    // generate_inputs,
+    // generate_inputs_from_array,
     strxor,
     str_to_array,
     expand_msg_xmd,
-    bytes_to_registers,
+    // bytes_to_registers,
     sgn0,
+    hash_to_field,
     map_to_curve,
+    point_add,
+    hash_to_curve
 }
