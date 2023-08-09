@@ -1,5 +1,5 @@
-# `secp256k1_XMD:SHA-256_SSWU_RO_` hash-to-curve in circom
-
+# hash-to-curve on grumpkin curve in circom
+<!-- 
 ## Quick start
 
 First, install `circom-helper` dependencies following [these
@@ -10,22 +10,21 @@ distributions).
 1. Clone this repository and navigate to the project root.
 2. Run `npm i`
 3. In a different terminal, navigate to the project root and run `npm run circom-helper`.
-3. In a different terminal, navigate to the project root and run `npm run test`.
+3. In a different terminal, navigate to the project root and run `npm run test`. -->
 
 ## About the circuits
 
 The `HashToCurve` circuit, parameterised by the message length (in bytes), is
-located at `circuits/circom/hash_to_curve.circom`. It implements the
-`secp256k1_XMD:SHA-256_SSWU_RO_` hash-to-curve suite described
-[here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#appendix-J.8.1).
+located at `circuits/circom/hash_to_curve.circom`. It implements the hash-to-curve suite described
+[here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#appendix-J.8.1) on grumpkin curve.
 
-## Constraints
+<!-- ## Constraints
 
 A circuit parameterised for a message with length 3 will have 2217282
 constraints, and a circuit for a message of length 64 will have 2218762
 constraints. In practice, messages will be longer, and the number of
 constraints will be accordingly larger. The bulk of the constraints come from
-the `hash-to-field` circuit which involves multiple SHA256 hashes.
+the `hash-to-field` circuit which involves multiple SHA256 hashes. -->
 
 ## The algorithm
 
@@ -51,7 +50,7 @@ Implemented in `circuits/circom/hash_to_field.circom`. Follows the algorithm
 described
 [here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#hashtofield).
 
-Constraints: 1881345 where the message length is 3.
+<!-- Constraints: 1881345 where the message length is 3. -->
 
 ### `map_to_curve`
 
@@ -59,12 +58,12 @@ Implemented in `circuits/circom/map_to_curve.circom`. Follows the SSWU
 algorithm described
 [here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#simple-swu).
 
-Constraints: 68792
+<!-- Constraints: 68792 -->
 
-### `iso_map`
+<!-- ### `iso_map`
 
 Implemented in `circuits/circom/iso_map.circom`. Follows the algorithm
 described
 [here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#appx-iso-secp256k1).
 
-Constraints: 95331
+Constraints: 95331 -->
