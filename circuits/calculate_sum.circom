@@ -1,7 +1,7 @@
 pragma circom 2.0.0;
 
 // Output the sum of the input signals.
-template CalculateTotal(n) {
+template CalculateSum(n) {
     assert(n > 0);
     signal input in[n];
     signal output out;

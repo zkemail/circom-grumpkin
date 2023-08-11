@@ -1,6 +1,5 @@
 pragma circom 2.0.0;
 include "./constants.circom";
-include "./calculateTotal.circom";
 include "./Sha256.circom";
 // include "../node_modules/circom-ecdsa/circuits/bigint.circom";
 // include "../node_modules/circom-ecdsa/node_modules/circomlib/circuits/comparators.circom";

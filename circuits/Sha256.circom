@@ -1,5 +1,5 @@
 pragma circom 2.0.0;
-include "./calculateTotal.circom";
+include "./calculate_sum.circom";
 include "./selector.circom";
 include "../node_modules/circomlib/circuits/sha256/sha256.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
@@ -96,7 +96,7 @@ template CheckZeroPad(length) {
     component lt[length];
     component eq_c[length];
     component eq_d[length];
-    component total = CalculateTotal(length);
+    component total = CalculateSum(length);
     for (var i = 0; i < length; i ++) {
         gte[i] = GreaterEqThan(252);
         gte[i].in[0] <== i;
