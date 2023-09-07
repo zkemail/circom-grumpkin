@@ -181,6 +181,27 @@ const point_add = (x0: bigint, y0: bigint, x1: bigint, y1: bigint) => {
     return { x: x2, y: y2 }
 }
 
+const point_double = (x0: bigint, y0: bigint) => {
+    const y2_inv = field.inv(BigInt(2) * y0);
+    const lambda = mod((BigInt(3) * x0 * x0) * y2_inv, p);
+    const x2 = mod((lambda * lambda - BigInt(2) * x0), p);
+    const gamma = mod((y0 - lambda * x0), p);
+    const y2 = mod((- lambda * x2 - gamma), p);
+    return { x: x2, y: y2 }
+}
+
+const point_scalar_mul = (x0: bigint, y0: bigint, scalar: bigint) => {
+    let doubled = { x: x0, y: y0 };
+    let result = { x: BigInt(0), y: BigInt(1) };
+    for (let i = 0; i < 254; i++) {
+        if (scalar & (BigInt(1) << BigInt(i))) {
+            result = point_add(result.x, result.y, doubled.x, doubled.y);
+        }
+        doubled = point_double(doubled.x, doubled.y);
+    }
+    return result;
+}
+
 const hash_to_curve = (msg: number[]) => {
     const us = hash_to_field(msg);
     const point0 = map_to_curve(us[0]);
@@ -242,5 +263,7 @@ export {
     hash_to_field,
     map_to_curve,
     point_add,
+    point_double,
+    point_scalar_mul,
     hash_to_curve
 }
