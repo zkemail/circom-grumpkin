@@ -173,9 +173,11 @@ const map_to_curve = (u: bigint) => {
 const point_add = (x0: bigint, y0: bigint, x1: bigint, y1: bigint) => {
     const x_sub = mod((x0 - x1), p);
     const x_sub_inv = field.inv(x_sub);
-    const slope = mod((y0 - y1) * x_sub_inv, p);
-    const x2 = mod((slope * slope - x0 - x1), p);
-    const y2 = mod((y0 + slope * (x2 - x0)), p);
+    const lambda = mod((y0 - y1) * x_sub_inv, p);
+    const x2 = mod((lambda * lambda - x0 - x1), p);
+    const cross = mod((y1 * x0 - y0 * x1), p);
+    const gamma = mod((cross * x_sub_inv), p);
+    const y2 = mod((- lambda * x2 - gamma), p);
     return { x: x2, y: y2 }
 }
 

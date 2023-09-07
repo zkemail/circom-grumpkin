@@ -15,9 +15,12 @@ template PointAdd() {
     signal x_sub <== a[0] - b[0];
     signal x_sub_inv <-- 1/x_sub;
     x_sub * x_sub_inv === 1;
-    signal slope <== (a[1] - b[1]) * x_sub_inv;
-    out[0] <== slope * slope - a[0] - b[0];
-    out[1] <== a[1] + slope * (out[0] - a[0]);
+    signal lambda <== (a[1] - b[1]) * x_sub_inv;
+    out[0] <== lambda * lambda - a[0] - b[0];
+    signal cross0 <== b[1] * a[0];
+    signal cross1 <== cross0 - a[1] * b[0];
+    signal gamma <== cross1 * x_sub_inv;
+    out[1] <== - lambda * out[0] - gamma;
 }
 
 // template PointAdd() {
