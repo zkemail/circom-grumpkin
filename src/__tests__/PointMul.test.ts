@@ -28,6 +28,9 @@ describe('PointMul', () => {
         const expected_point = point_double(point0.x, point0.y);
         expect(witness[1]).toEqual(expected_point.x);
         expect(witness[2]).toEqual(expected_point.y);
+        const expected_point_muled = point_scalar_mul(point0.x, point0.y, BigInt(2));
+        expect(witness[1]).toEqual(expected_point_muled.x);
+        expect(witness[2]).toEqual(expected_point_muled.y);
     })
 
     it(`3a = 2a + a`, async () => {
@@ -45,6 +48,10 @@ describe('PointMul', () => {
         const expected_point = point_add(doubled_point.x, doubled_point.y, point0.x, point0.y);
         expect(witness[1]).toEqual(expected_point.x);
         expect(witness[2]).toEqual(expected_point.y);
+        const expected_point_muled = point_scalar_mul(point0.x, point0.y, BigInt(3));
+        expect(witness[1]).toEqual(expected_point_muled.x);
+        expect(witness[2]).toEqual(expected_point_muled.y);
+
     })
 
 })

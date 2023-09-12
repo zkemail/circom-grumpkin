@@ -171,6 +171,12 @@ const map_to_curve = (u: bigint) => {
 }
 
 const point_add = (x0: bigint, y0: bigint, x1: bigint, y1: bigint) => {
+    if (x0 == BigInt(0) && y0 == BigInt(1)) {
+        return {
+            x: x1,
+            y: y1
+        }
+    }
     const x_sub = mod((x0 - x1), p);
     const x_sub_inv = field.inv(x_sub);
     const lambda = mod((y0 - y1) * x_sub_inv, p);
@@ -194,7 +200,7 @@ const point_scalar_mul = (x0: bigint, y0: bigint, scalar: bigint) => {
     let doubled = { x: x0, y: y0 };
     let result = { x: BigInt(0), y: BigInt(1) };
     for (let i = 0; i < 254; i++) {
-        if (scalar & (BigInt(1) << BigInt(i))) {
+        if (((scalar >> BigInt(i)) & BigInt(1)) === BigInt(1)) {
             result = point_add(result.x, result.y, doubled.x, doubled.y);
         }
         doubled = point_double(doubled.x, doubled.y);
