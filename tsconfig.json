@@ -14,7 +14,8 @@
         "strict": true,
         "outDir": "./dist",
         "composite": true,
-        "declarationMap": true
+        "declarationMap": true,
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules/**",
