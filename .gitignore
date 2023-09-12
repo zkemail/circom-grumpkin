@@ -44,3 +44,5 @@ tags
 
 *.r1cs
 yarn-error.log
+
+dist/

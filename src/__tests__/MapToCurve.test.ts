@@ -15,7 +15,7 @@ import {
     map_to_curve,
     expand_msg_xmd,
     str_to_array,
-} from '../generate_inputs'
+} from '..'
 import * as path from "path";
 const circom_tester = require("circom_tester");
 const wasm_tester = circom_tester.wasm;

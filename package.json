@@ -7,6 +7,8 @@
     },
     "author": "Koh Wei Jie",
     "license": "MIT",
+    "main": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts",
     "dependencies": {
         "abdk-libraries-circom": "https://github.com/abdk-consulting/abdk-libraries-circom.git",
         "circom-helper": "^0.3.5",

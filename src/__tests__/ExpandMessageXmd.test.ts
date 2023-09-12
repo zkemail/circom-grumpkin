@@ -19,14 +19,14 @@ import {
     gen_b3,
     strxor,
     expand_msg_xmd,
-} from '../generate_inputs'
+} from '..'
 import {
     buffer2bitArray,
     bufToPaddedBytes,
     bufToSha256PaddedBitArr
 } from '../utils'
 import {
-} from '../generate_inputs'
+} from '..'
 import * as path from "path";
 const circom_tester = require("circom_tester");
 const wasm_tester = circom_tester.wasm;

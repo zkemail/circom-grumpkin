@@ -7,7 +7,7 @@ const stringifyBigInts = ff.utils.stringifyBigInts
 //     callGetSignalByName as getSignalByName,
 // } from 'circom-helper'
 import * as path from "path";
-import { hash_to_curve, str_to_array } from "../generate_inputs";
+import { hash_to_curve, str_to_array } from "..";
 const circom_tester = require("circom_tester");
 const wasm_tester = circom_tester.wasm;
 

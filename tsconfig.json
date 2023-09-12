@@ -12,12 +12,14 @@
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
         "strict": true,
-        "outDir": "./build"
+        "outDir": "./dist",
+        "composite": true,
+        "declarationMap": true
     },
     "exclude": [
         "node_modules/**"
     ],
     "include": [
-        "./ts"
+        "./src"
     ]
 }

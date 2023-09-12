@@ -9,7 +9,7 @@ const stringifyBigInts = ff.utils.stringifyBigInts
 // import {
 //     bytes_to_registers,
 // } from '../generate_inputs'
-import { hash_to_field } from "../generate_inputs";
+import { hash_to_field } from "..";
 import * as path from "path";
 const circom_tester = require("circom_tester");
 const wasm_tester = circom_tester.wasm;
