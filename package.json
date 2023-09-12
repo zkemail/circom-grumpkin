@@ -3,7 +3,9 @@
     "version": "0.0.1",
     "description": "circom circuits for the secp256k1_XMD:SHA-256_SSWU_RO_ hash-to-curve algorithm",
     "scripts": {
-        "test": "jest --runInBand"
+        "test": "jest --runInBand",
+        "build": "tsc",
+        "install": "npm run build"
     },
     "author": "Koh Wei Jie",
     "license": "MIT",
