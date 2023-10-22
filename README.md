@@ -67,3 +67,6 @@ described
 [here](https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-13.html#appx-iso-secp256k1).
 
 Constraints: 95331 -->
+
+# Acknowledgement
+Our library is a fork of [secp256k1_hash_to_curve developed by Geometry](https://github.com/geometryresearch/secp256k1_hash_to_curve). This product includes software developed by ABDK Consulting. In particular, [`min` function and `FieldSqrt` template in map_to_curve.circom](https://github.com/zkemail/circom-grumpkin/blob/main/circuits/map_to_curve.circom#L209-L271) is taken from min.circom and FieldSqrt.circom in [abdk-libraries-circom developed by ABDK Consulting](https://github.com/abdk-consulting/abdk-libraries-circom/tree/master).
